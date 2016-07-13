@@ -37,6 +37,9 @@ public slots:
   void showPass(bool checked);
   void locateDBFile();
 
+signals:
+  void savedDBSettings();
+
 private:
   DBSettings* dbSettings;
   bool saved;  // Current settings are saved?

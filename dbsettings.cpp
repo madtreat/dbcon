@@ -20,10 +20,11 @@ DBSettings::DBSettings(QString _filename, QObject* _parent)
   m_userHomeDir = QDir::home().absolutePath();
 
   // Get config file from [application root directory]/config
-  m_appRootDir = QCoreApplication::applicationDirPath();
-  QDir appRoot(m_appRootDir);
+  QString appBinDir = QCoreApplication::applicationDirPath();
+  QDir appRoot(appBinDir);
 
   appRoot.cdUp();
+  m_appRootDir = appRoot.absolutePath();
   m_configDir = appRoot.absolutePath() + "/config";
 
   if (_filename == "") {
@@ -84,6 +85,52 @@ void DBSettings::loadSettingsFile(QString _filename) {
   m_dbPass = settings->value("pass").toString();
   m_dbFile = settings->value("file").toString();
   settings->endGroup();  // "database"
+}
+
+void DBSettings::saveSettingsFile() {
+  if (!settings) {
+    settings = new QSettings(m_settingsFile, QSettings::IniFormat);
+  }
+  exportSettingsFile(m_settingsFile, false);
+  qDebug() << "Database settings saved.";
+}
+
+/*
+ *  Export the settings to a new file, keeping the original file in place
+ *  unless deleteOld is true.
+ */
+void DBSettings::exportSettingsFile(QString _filename, bool deleteOld) {
+  QSettings* sf = NULL;
+  if (deleteOld) {
+    if (settings) {
+      delete settings;
+      QFile::remove(m_settingsFile);
+    }
+    m_settingsFile = _filename;
+    settings = new QSettings(m_settingsFile, QSettings::IniFormat);
+    sf = settings;
+  }
+  else {
+    sf = new QSettings(_filename, QSettings::IniFormat);
+  }
+  
+  sf->beginGroup("database");
+  sf->setValue("type", m_dbType);
+  sf->setValue("host", m_dbHost.toString());
+  sf->setValue("port", m_dbPort);
+  sf->setValue("name", m_dbName);
+  sf->setValue("user", m_dbUser);
+  sf->setValue("pass", m_dbPass);
+  sf->setValue("file", m_dbFile);
+  sf->endGroup();  // "database"
+  qDebug() << "Database settings exported to" << _filename;
+
+  // Cleanup
+  if (deleteOld) {
+    sf = NULL;
+  } else {
+    delete sf;
+  }
 }
 
 void DBSettings::setDefaults() {

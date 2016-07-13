@@ -221,9 +221,22 @@ void DBConfWindow::testConnection() {
 
 void DBConfWindow::saveDBSettings() {
   // TODO: FIXME: do this one
-  //dbSettings->saveSettingsFile();
+  if (tempSettings) {
+    QString appDir = dbSettings->appRootDir();
+    // QString filename = QFileDialog::getOpenFileName(this,
+    //   tr("Select Database file"), appDir);
+    QString newConfigDir = appDir + "/config";
+    QString filename = newConfigDir + "/db-settings.ini";
+    dbSettings->exportSettingsFile(filename, true);
+    dbSettings->setConfigDir(newConfigDir);
+    tempSettings = false;
+  }
+  else {
+    dbSettings->saveSettingsFile();
+  }
   statusBox->insertPlainText(tr("Database settings saved successfully!\n"));
   saved = true;
+  emit savedDBSettings();
 }
 
 void DBConfWindow::dbTypeChanged(int index) {

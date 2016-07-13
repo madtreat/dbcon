@@ -22,6 +22,8 @@ public:
   QString   userHomeDir()     const {return m_userHomeDir;}
   QString   settingsFile()    const {return m_settingsFile;}
 
+  void setConfigDir(QString newcd) {m_configDir = newcd;}
+
   enum DebugLevel {
     DEBUG_NONE      = 0,
     DEBUG_SETTINGS  = 1 << 0,
@@ -65,8 +67,8 @@ public:
 
 public slots:
   void loadSettingsFile(QString _filename);
-  // void saveSettingsFile();
-  // void exportSettingsFile(QString _filename);
+  void saveSettingsFile();
+  void exportSettingsFile(QString _filename, bool deleteOld = false);
 
 private:
   QSettings*  settings;
