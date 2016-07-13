@@ -27,24 +27,30 @@ DBSettings::DBSettings(QString _filename, QObject* _parent)
   m_configDir = appRoot.absolutePath() + "/config";
 
   if (_filename == "") {
-    m_settingsFile = m_configDir + "/dbsettings.ini";
+    m_settingsFile = m_configDir + "/db-settings.ini";
   }
   else {
     m_settingsFile = _filename;
     m_configDir = QFileInfo(m_settingsFile).absolutePath();
   }
 
-  if (!QFile::exists(m_settingsFile)) {
+  if (m_settingsFile.contains("/tmp")) {
+    qDebug() << "Creating temporary settings in" << m_settingsFile;
+    setDefaults();
+    return;
+  }
+  else if (!QFile::exists(m_settingsFile)) {
     qWarning() << "Warning: Settings file" << m_settingsFile << "does not exist.";
     m_configDir = m_userHomeDir + "/.dbc";
-    m_settingsFile = m_configDir + "/dbsettings.ini";
+    m_settingsFile = m_configDir + "/db-settings.ini";
     qWarning() << "   Trying" << m_settingsFile << "...";
     if (!QFile::exists(m_settingsFile)) {
       qWarning() << "   File not found\n";
-      qWarning() << "ERROR: No valid config files found.";
-      qWarning() << "NOTE: you can specify a config file with the '-c <settings.ini>' option.";
-      qWarning() << "Exiting.";
-      exit(1);
+      qWarning() << "Warning: No valid config files found.";
+      qWarning() << "NOTE: you can specify a config file with the '--db-config <settings.ini>' option.";
+      qWarning() << "This will be an invalid config until it is set up properly.";
+      setDefaults();
+      return;
     }
   }
 
@@ -55,7 +61,7 @@ DBSettings::DBSettings(QString _filename, QObject* _parent)
 DBSettings::~DBSettings() {
 }
 
-QString DBSettings::dbTypeToString(DBType type) const {
+QString DBSettings::dbTypeToString(DBType type) {
   return QString(QMetaEnum::fromType<DBSettings::DBType>().key(type));
 }
 
@@ -76,7 +82,19 @@ void DBSettings::loadSettingsFile(QString _filename) {
   m_dbName = settings->value("name").toString();
   m_dbUser = settings->value("user").toString();
   m_dbPass = settings->value("pass").toString();
+  m_dbFile = settings->value("file").toString();
   settings->endGroup();  // "database"
+}
+
+void DBSettings::setDefaults() {
+  m_debug = DEBUG_NONE;
+  m_dbType = MYSQL;
+  m_dbHost = QHostAddress::LocalHost;
+  m_dbPort = DEFAULT_PORT_MYSQL;
+  m_dbName = "dbc";
+  m_dbUser = "dbc";
+  m_dbPass = "dbc";
+  m_dbFile = QString();
 }
 
 QHostAddress DBSettings::checkHost(QString h) {

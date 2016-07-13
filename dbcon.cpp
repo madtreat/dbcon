@@ -54,6 +54,9 @@ QSqlDatabase DBCon::connectToDB(QString connectionName) {
     qWarning() << "Error code:" << dbc.lastError().nativeErrorCode();
     qWarning() << dbc.lastError().text();
   }
+  else {
+    qDebug() << "Connected to database";
+  }
   return dbc;
 }
 

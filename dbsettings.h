@@ -43,7 +43,7 @@ public:
   };
   Q_ENUM(DBType);
 
-  QString dbTypeToString(DBType type) const;
+  static QString dbTypeToString(DBType type);
 
   DBType        dbType() const {return m_dbType;}
   QHostAddress  dbHost() const {return m_dbHost;}
@@ -51,11 +51,22 @@ public:
   QString       dbName() const {return m_dbName;}
   QString       dbUser() const {return m_dbUser;}
   QString       dbPass() const {return m_dbPass;}
+  QString       dbFile() const {return m_dbFile;}
+
   QString    dbTypeStr() const {return dbTypeToString(m_dbType);}
 
+  void setDBType(DBType type)       {m_dbType = type;}
+  void setDBHost(QHostAddress host) {m_dbHost = host;}
+  void setDBPort(quint16 port)      {m_dbPort = port;}
+  void setDBName(QString name)      {m_dbName = name;}
+  void setDBUser(QString user)      {m_dbUser = user;}
+  void setDBPass(QString pass)      {m_dbPass = pass;}
+  void setDBFile(QString file)      {m_dbFile = file;}
 
 public slots:
   void loadSettingsFile(QString _filename);
+  // void saveSettingsFile();
+  // void exportSettingsFile(QString _filename);
 
 private:
   QSettings*  settings;
@@ -74,7 +85,9 @@ private:
   QString       m_dbName;
   QString       m_dbUser;
   QString       m_dbPass;
+  QString       m_dbFile;
 
+  void setDefaults();
   QHostAddress checkHost(QString h);
 };
 

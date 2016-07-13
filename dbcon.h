@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSqlDatabase>
+#include <QSqlError>
 
 
 class DBSettings;
@@ -17,9 +18,13 @@ public:
   explicit DBCon(const DBCon& orig) = delete;
   ~DBCon();
 
-  bool isValidDatabaseDriver(QString type);
-  QSqlDatabase connectToDB(QString connectionName);
+  bool isValid()      const {return db.isValid();}
+  bool isOpen()       const {return db.isOpen();}
+  bool isOpenError()  const {return db.isOpenError();}
+  QString lastError() const {return db.lastError().text();}
 
+  static bool isValidDatabaseDriver(QString type);
+  QSqlDatabase connectToDB(QString connectionName);
   QSqlDatabase getDatabaseObject() const {return db;}
 
 public slots:
