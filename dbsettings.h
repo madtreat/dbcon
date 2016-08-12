@@ -5,6 +5,8 @@
 #include <QString>
 #include <QHostAddress>
 
+#include "dbtable.h"
+
 
 class QSettings;
 
@@ -88,6 +90,9 @@ private:
   QString       m_dbUser;
   QString       m_dbPass;
   QString       m_dbFile;
+
+  // Database table structure
+  DBTableList   m_tables;
 
   void setDefaults();
   QHostAddress checkHost(QString h);

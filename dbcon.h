@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSqlDatabase>
 #include <QSqlError>
+#include <QSqlQuery>
 
 
 class DBSettings;
@@ -28,7 +29,7 @@ public:
   QSqlDatabase getDatabaseObject() const {return db;}
 
 public slots:
-  void execQuery(QString query);
+  QSqlQuery execQuery(QString query);
 
 private:
   DBSettings*   settings;

@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QLineEdit>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QPushButton>
 #include <QSpinBox>
@@ -118,9 +119,16 @@ saved(false) {
 
   // Now that everything is created and pointers are validated, we can set
   // some defaults
-  dbTypeWidget->setCurrentIndex((int)DBSettings::MYSQL);
+  if (tempSettings) {
+    dbTypeWidget->setCurrentIndex((int)DBSettings::MYSQL);
+    dbPortWidget->setValue(getDefaultPort());
+  }
+  else {
+    dbTypeWidget->setCurrentIndex((int)dbSettings->dbType());
+    dbPortWidget->setValue(dbSettings->dbPort());
+    // TODO: set dbFile also
+  }
   dbTypeChanged((int)DBSettings::MYSQL);
-  dbPortWidget->setValue(getDefaultPort());
 
   // Add the input widgets to the form layout
   form->addRow(tr("Database &Type:"),   dbTypeWidget);
@@ -130,6 +138,11 @@ saved(false) {
   form->addRow(tr("Database &User:"),   dbUserWidget);
   form->addRow(tr("User's &Password:"), dbPassWGroup);
   form->addRow(tr("SQLite 2/3 &File:"), dbFileWGroup);
+
+  // Create the "Do not show this window again" button
+  // TODO: Make this checkbox actually hide the window in the future
+  QCheckBox* hideWindowInFuture = new QCheckBox("Do not show this window at startup.");
+  hideWindowInFuture->setChecked(false);
 
   // Create the test and save buttons
   QHBoxLayout* buttons = new QHBoxLayout();
@@ -153,6 +166,13 @@ saved(false) {
   // Add everything to the main layout
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->addLayout(form);
+
+  QFrame* line = new QFrame();
+  line->setFrameShape(QFrame::HLine);
+  line->setFrameShadow(QFrame::Sunken);
+  layout->addWidget(line);
+
+  layout->addWidget(hideWindowInFuture);
   layout->addLayout(buttons);
   layout->addWidget(statusBox);
 
@@ -216,6 +236,12 @@ void DBConfWindow::testConnection() {
   else if (dbc.isOpen()) {
     statusBox->insertPlainText(tr("Connection to database has been opened successfully!\n"));
     statusBox->insertPlainText(tr("You should save the database settings now.\n"));
+    QString tableCheck = "SHOW TABLES;";
+    statusBox->insertPlainText(tr("Checking tables...\n"));
+    QSqlQuery results = dbc.execQuery(tableCheck);
+    while (results.next()) {
+      statusBox->insertPlainText("-> " + results.value(0).toString() + "\n");
+    }
   }
 }
 

@@ -2,6 +2,7 @@
 #include "dbcon.h"
 
 #include <QSqlDatabase>
+#include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlQuery>
 
@@ -60,24 +61,29 @@ QSqlDatabase DBCon::connectToDB(QString connectionName) {
   return dbc;
 }
 
-void DBCon::execQuery(QString queryStr) {
+QSqlQuery DBCon::execQuery(QString queryStr) {
   QSqlQuery q(queryStr, db);
   bool ok = q.exec();
   if (!ok) {
     qWarning() << "Error querying database.";
     qWarning() << "Error code:" << db.lastError().nativeErrorCode();
     qWarning() << db.lastError();
+    return QSqlQuery();
   }
   else {
     if (settings->debugQueries()) {
       qDebug() << "Query successful!";
-      qDebug() << "Results:";
-      while (q.next()) {
-        // QString name = q.value(0).toString();
-        // int salary = q.value(1).toInt();
-        // qDebug() << name << salary;
+      if (db.driver()->hasFeature(QSqlDriver::QuerySize)) {
+        qDebug() << "Found" << q.size() << "records";
       }
+      qDebug() << "Results:";
     }
+    // while (q.next()) {
+    //   // QString name = q.value(0).toString();
+    //   // int salary = q.value(1).toInt();
+    //   // qDebug() << name << salary;
+    // }
+    return q;
   }
 }
 

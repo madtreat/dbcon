@@ -10,13 +10,16 @@ set(SOURCES
   dbcon.cpp
   dbconfwindow.cpp
   dbsettings.cpp
+  dbtable.cpp
 )
 
 set(HEADERS
   dbconsts.h
   dbcon.h
   dbconfwindow.h
+  dbfield.h
   dbsettings.h
+  dbtable.h
 )
 
 

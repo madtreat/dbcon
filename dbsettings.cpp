@@ -10,6 +10,7 @@
 #include <QHostInfo>
 
 #include "dbconsts.h"
+#include "dbtable.h"
 
 
 #define DEBUG_SETTINGS 0
@@ -85,6 +86,14 @@ void DBSettings::loadSettingsFile(QString _filename) {
   m_dbPass = settings->value("pass").toString();
   m_dbFile = settings->value("file").toString();
   settings->endGroup();  // "database"
+
+  QStringList childGroups = settings->childGroups();
+  foreach(QString child, childGroups) {
+    if (child.startsWith("table-")) {
+      DBTable* table = new DBTable(child.remove("table-"), settings, this);
+      m_tables.append(table);
+    }
+  }
 }
 
 void DBSettings::saveSettingsFile() {
@@ -115,7 +124,7 @@ void DBSettings::exportSettingsFile(QString _filename, bool deleteOld) {
   }
   
   sf->beginGroup("database");
-  sf->setValue("type", m_dbType);
+  sf->setValue("type", dbTypeStr().toLower());
   sf->setValue("host", m_dbHost.toString());
   sf->setValue("port", m_dbPort);
   sf->setValue("name", m_dbName);
