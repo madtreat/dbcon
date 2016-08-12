@@ -4,6 +4,8 @@
 #include <QString>
 #include <QVariant>
 #include <QList>
+#include <QStringList>
+#include <QMap>
 
 
 enum DBFieldType {
@@ -15,16 +17,30 @@ enum DBFieldType {
   // FT_TIMESTAMP,
   FT_VARCHAR,
   FT_TEXT,
-  NUM_FIELD_TYPES
+  FT_CHOICE  // text, but limited to certain options
 };
+
+typedef QMap<QString, QString> Choices;
 
 struct DBField {
   QString     name;
   DBFieldType type;
   int         maxSize;
-  // bool        allowNull;
-  // bool        key;  // PRI if a private key in MySQL
+  bool        allowNull;
+  QString     key;  // PRI if a private key in MySQL
   QVariant    defaultValue;  // NULL or valid value in MySQL
+  Choices     choices;
+
+  void parseChoices(QString raw) {
+    if (raw == "") {
+      return;
+    }
+    QStringList list = raw.split(", ");
+    foreach(QString choice, list) {
+      QStringList parts = choice.split(" :: ");
+      choices.insert(parts.at(0), parts.at(1));
+    }
+  }
 };
 
 typedef QList<DBField*> DBFieldList;

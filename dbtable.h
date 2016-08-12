@@ -32,6 +32,8 @@ private:
   int         numFields;
   int         versionMajor;
   int         versionMinor;
+
+  DBField* readField();
 };
 
 typedef QList<DBTable*> DBTableList;
