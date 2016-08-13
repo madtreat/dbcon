@@ -20,7 +20,7 @@ m_versionMinor(0) {
   QString tableStr = "table-" + m_name;
   m_versionMajor = settings->value(tableStr + "/version_major").toInt();
   m_versionMinor = settings->value(tableStr + "/version_minor").toInt();
-  QString copyFrom = settings->value(tableStr + "/copy_from").toString();
+  QString copyFrom = settings->value(tableStr + "/copy_fields").toString();
 
   // Read copyFrom tables' m_fields
   if (copyFrom != "") {
@@ -29,6 +29,7 @@ m_versionMinor(0) {
       QStringList parts = copyField.split("/");
       QString table = parts.at(0);
       QString fieldNum = parts.at(1);
+      qDebug() << "Copying settings from" << table << "/" << fieldNum;
 
       if (fieldNum == "all") {
         QString tempGrp = "table-" + table;
