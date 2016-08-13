@@ -83,7 +83,11 @@ saved(false) {
 
   // Database password widget
   dbPassWidget = new QLineEdit();
-  dbPassWidget->setPlaceholderText(dbSettings->dbPass());
+  QString placeholder = "Set password...";
+  if (dbSettings->dbPass() != "") {
+    placeholder = "Change password...";
+  }
+  dbPassWidget->setPlaceholderText(placeholder);
   dbPassWidget->setEchoMode(QLineEdit::Password);
   connect(dbPassWidget, &QLineEdit::textChanged,
           this,         &DBConfWindow::dbPassChanged);
