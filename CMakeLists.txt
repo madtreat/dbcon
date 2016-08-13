@@ -9,6 +9,7 @@ find_package(Qt5Network REQUIRED)
 set(SOURCES
   dbcon.cpp
   dbconfwindow.cpp
+  dbfield.cpp
   dbsettings.cpp
   dbtable.cpp
 )

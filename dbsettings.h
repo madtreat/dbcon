@@ -67,6 +67,8 @@ public:
   void setDBPass(QString pass)      {m_dbPass = pass;}
   void setDBFile(QString file)      {m_dbFile = file;}
 
+  DBTableList getTables() const {return m_tables;}
+
 public slots:
   void loadSettingsFile(QString _filename);
   void saveSettingsFile();

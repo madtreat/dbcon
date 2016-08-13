@@ -6,23 +6,31 @@
 #include <QList>
 #include <QStringList>
 #include <QMap>
+#include <QMetaEnum>
 
-
-enum DBFieldType {
-  FT_INT = 0,
-  FT_DOUBLE,
-  FT_BOOL,
-  FT_DATE,
-  FT_TIME,
-  // FT_TIMESTAMP,
-  FT_VARCHAR,
-  FT_TEXT,
-  FT_CHOICE  // text, but limited to certain options
-};
 
 typedef QMap<QString, QString> Choices;
 
-struct DBField {
+class DBField : public QObject {
+  Q_OBJECT;
+
+public:
+  enum DBFieldType {
+    FT_INT = 0,
+    FT_DOUBLE,
+    FT_BOOL,
+    FT_DATE,
+    FT_TIME,
+    // FT_TIMESTAMP,
+    FT_VARCHAR,
+    FT_TEXT,
+    FT_CHOICE  // text, but limited to certain options
+  };
+  Q_ENUM(DBFieldType);
+
+  static QString     fieldTypeToString(DBFieldType type);
+  static DBFieldType fieldTypeFromString(QString type);
+
   QString     name;
   DBFieldType type;
   int         maxSize;
@@ -31,16 +39,7 @@ struct DBField {
   QVariant    defaultValue;  // NULL or valid value in MySQL
   Choices     choices;
 
-  void parseChoices(QString raw) {
-    if (raw == "") {
-      return;
-    }
-    QStringList list = raw.split(", ");
-    foreach(QString choice, list) {
-      QStringList parts = choice.split(" :: ");
-      choices.insert(parts.at(0), parts.at(1));
-    }
-  }
+  void parseChoices(QString raw);
 };
 
 typedef QList<DBField*> DBFieldList;

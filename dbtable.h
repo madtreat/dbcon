@@ -20,6 +20,14 @@ public:
   explicit DBTable(const DBTable& orig) = delete;
   ~DBTable();
 
+  QString       name() const {return m_name;}
+  DBFieldList fields() const {return m_fields;}
+  int      numFields() const {return m_numFields;}
+  int   versionMajor() const {return m_versionMajor;}
+  int   versionMinor() const {return m_versionMinor;}
+
+  QString getPrintableFields() const;
+
 public slots:
   // void readFromSettings();
   // void saveSettings();
@@ -27,11 +35,11 @@ public slots:
 private:
   QSettings* settings;
 
-  QString     name;
-  DBFieldList fields;
-  int         numFields;
-  int         versionMajor;
-  int         versionMinor;
+  QString     m_name;
+  DBFieldList m_fields;
+  int         m_numFields;
+  int         m_versionMajor;
+  int         m_versionMinor;
 
   DBField* readField();
 };

@@ -237,10 +237,16 @@ void DBConfWindow::testConnection() {
     statusBox->insertPlainText(tr("Connection to database has been opened successfully!\n"));
     statusBox->insertPlainText(tr("You should save the database settings now.\n"));
     QString tableCheck = "SHOW TABLES;";
-    statusBox->insertPlainText(tr("Checking tables...\n"));
+    statusBox->insertPlainText(tr("Checking db tables...\n"));
     QSqlQuery results = dbc.execQuery(tableCheck);
     while (results.next()) {
       statusBox->insertPlainText("-> " + results.value(0).toString() + "\n");
+    }
+    statusBox->insertPlainText("...against expected:\n");
+    DBTableList expected = dbSettings->getTables();
+    foreach (DBTable* table, expected) {
+      statusBox->insertPlainText("-> " + table->name() + "\n");
+      statusBox->insertPlainText(table->getPrintableFields());
     }
   }
 }
