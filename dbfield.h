@@ -31,6 +31,8 @@ public:
   static QString     fieldTypeToString(DBFieldType type);
   static DBFieldType fieldTypeFromString(QString type);
 
+  QString fieldTypeStr() const {return fieldTypeToString(type);}
+
   QString     name;
   DBFieldType type;
   int         maxSize;
@@ -38,6 +40,9 @@ public:
   QString     key;  // PRI if a private key in MySQL
   QVariant    defaultValue;  // NULL or valid value in MySQL
   Choices     choices;
+  QString     fkRef;  // Foreign Key reference target
+  QString     fkConstraint;  // Foreign Key constraint name
+  bool        autoIncrement;
 
   void parseChoices(QString raw);
 };

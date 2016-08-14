@@ -9,6 +9,7 @@ class QLineEdit;
 class QSpinBox;
 class QPushButton;
 class QTextEdit;
+class QScrollBar;
 
 class DBSettings;
 // class DBCon;
@@ -23,7 +24,9 @@ public:
   ~DBConfWindow();
 
 public slots:
+  void scrollToEnd();
   void testConnection();
+  void verifyTables();
   void saveDBSettings();
 
   void dbTypeChanged(int     index);
@@ -59,9 +62,11 @@ private:
   QPushButton*  dbFileLocateButton;
 
   QPushButton*  testButton;
+  QPushButton*  verifyTablesButton;
   QPushButton*  saveButton;
 
   QTextEdit*    statusBox;
+  QScrollBar*   statusScroll;
 
   quint16 getDefaultPort();
 };

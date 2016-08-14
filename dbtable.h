@@ -27,6 +27,7 @@ public:
   int   versionMinor() const {return m_versionMinor;}
 
   QString getPrintableFields() const;
+  QString createTableCommand() const;
 
 public slots:
   // void readFromSettings();
@@ -41,7 +42,16 @@ private:
   int         m_versionMajor;
   int         m_versionMinor;
 
+  QString     m_pkName;
+  QString     m_ukName;
+
+  DBFieldList m_pks;  // Primary keys
+  DBFieldList m_uks;  // Unique keys
+  DBFieldList m_fks;  // Foreign keys
+
   DBField* readField();
+
+  QString keyLine(QString keyType);
 };
 
 typedef QList<DBTable*> DBTableList;

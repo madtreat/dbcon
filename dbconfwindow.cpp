@@ -18,6 +18,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextEdit>
+#include <QScrollBar>
 
 #include "dbconsts.h"
 #include "dbsettings.h"
@@ -153,10 +154,14 @@ saved(false) {
   testButton = new QPushButton("Test Connection");
   connect(testButton, &QPushButton::pressed,
           this,       &DBConfWindow::testConnection);
+  verifyTablesButton = new QPushButton("Verify Tables");
+  connect(verifyTablesButton, &QPushButton::pressed,
+          this,               &DBConfWindow::verifyTables);
   saveButton = new QPushButton("Save Settings");
   connect(saveButton, &QPushButton::pressed,
           this,       &DBConfWindow::saveDBSettings);
   buttons->addWidget(testButton);
+  buttons->addWidget(verifyTablesButton);
   buttons->addWidget(saveButton);
 
   // Create the status message area
@@ -166,6 +171,7 @@ saved(false) {
   // statusBox->setTextBackgroundColor(Qt::black);
   // statusBox->setTextColor(Qt::green);
   statusBox->setVisible(false);
+  statusScroll = statusBox->verticalScrollBar();
 
   // Add everything to the main layout
   QVBoxLayout* layout = new QVBoxLayout(this);
@@ -211,10 +217,14 @@ DBConfWindow::~DBConfWindow() {
   }
 }
 
+void DBConfWindow::scrollToEnd() {
+  statusScroll->setValue(statusScroll->maximum());
+}
+
 void DBConfWindow::testConnection() {
   statusBox->setVisible(true);
   QString dbTypeStr = dbSettings->dbTypeStr();
-  statusBox->insertPlainText(tr("Checking database driver for %1 is installed...").arg(dbTypeStr));
+  statusBox->insertPlainText(tr("Verifying %1 driver is installed...").arg(dbTypeStr));
   bool isValidDBDriver = DBCon::isValidDatabaseDriver("Q" + dbTypeStr);
   if (isValidDBDriver) {
     statusBox->insertPlainText(tr("yes\n"));
@@ -239,18 +249,38 @@ void DBConfWindow::testConnection() {
   }
   else if (dbc.isOpen()) {
     statusBox->insertPlainText(tr("Connection to database has been opened successfully!\n"));
+    statusBox->setTextColor(Qt::blue);
     statusBox->insertPlainText(tr("You should save the database settings now.\n"));
+    statusBox->setTextColor(Qt::black);
+  }
+  scrollToEnd();
+}
+
+void DBConfWindow::verifyTables() {
+  DBCon dbc(dbSettings, "check-tables");
+  if (dbc.isOpen()) {
     QString tableCheck = "SHOW TABLES;";
-    statusBox->insertPlainText(tr("Checking db tables...\n"));
+    statusBox->insertPlainText(tr("Verifying db tables exist...\n"));
     QSqlQuery results = dbc.execQuery(tableCheck);
+    QStringList dbTableList;
     while (results.next()) {
-      statusBox->insertPlainText("-> " + results.value(0).toString() + "\n");
+      QString dbt = results.value(0).toString();
+      dbTableList.append(dbt);
     }
-    statusBox->insertPlainText("...against expected:\n");
     DBTableList expected = dbSettings->getTables();
     foreach (DBTable* table, expected) {
-      statusBox->insertPlainText("-> " + table->name() + "\n");
-      statusBox->insertPlainText(table->getPrintableFields());
+      statusBox->insertPlainText("-> " + table->name() + ": ");
+      // statusBox->insertPlainText(table->getPrintableFields());
+      if (dbTableList.contains(table->name())) {
+        statusBox->setTextColor(Qt::green);
+        statusBox->insertPlainText(tr("exists"));
+      } else {
+        statusBox->setTextColor(Qt::red);
+        statusBox->insertPlainText(tr("missing"));
+      }
+      statusBox->setTextColor(Qt::black);
+      scrollToEnd();
+      statusBox->insertPlainText("\n");
     }
   }
 }
