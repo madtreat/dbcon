@@ -16,7 +16,7 @@ settings(_settings),
 dbName(_dbName) {
   db = connectToDB(dbName);
   if (db.isValid()) {
-    qDebug() << "Primary connection to database established!";
+    qDebug() << "Connection to database established!";
   }
 }
 
@@ -54,9 +54,6 @@ QSqlDatabase DBCon::connectToDB(QString connectionName) {
     qWarning() << "Error opening connection to database:" << connectionName;
     qWarning() << "Error code:" << dbc.lastError().nativeErrorCode();
     qWarning() << dbc.lastError().text();
-  }
-  else {
-    qDebug() << "Connected to database";
   }
   return dbc;
 }

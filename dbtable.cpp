@@ -1,3 +1,8 @@
+/*
+ *  TODO: Need a way to ensure all table dependencies are resolved in order.
+ *  example: when CREATE TABLE'ing, make sure Foreign Key referenced tables
+ *  appear before the referencing tables.
+ */
 
 #include "dbtable.h"
 
@@ -96,9 +101,7 @@ QString DBTable::createTableCommand() const {
     QString type = field->fieldTypeStr().remove("FT_");
     str += "  " + field->name + " ";
 
-    if (field->type == DBField::FT_INT ||
-        field->type == DBField::FT_DOUBLE ||
-        field->type == DBField::FT_VARCHAR || 
+    if (field->type == DBField::FT_VARCHAR || 
         field->type == DBField::FT_CHOICE) {
       // Add size, if needed, to type
       if (field->type == DBField::FT_CHOICE) {
@@ -169,7 +172,7 @@ QString DBTable::createTableCommand() const {
     }
   }
   
-  str += "\n)\n";
+  str += "\n);\n";
   return str;
 }
 
