@@ -248,7 +248,7 @@ void DBConfWindow::testConnection() {
     statusBox->insertPlainText("\n");
   }
   else if (dbc.isOpen()) {
-    statusBox->insertPlainText(tr("Connection to database has been opened successfully!"));
+    statusBox->insertPlainText(tr("Connection to database has been opened successfully!\n"));
     statusBox->setTextColor(Qt::blue);
     statusBox->insertPlainText(tr("You should save the database settings now."));
     statusBox->setTextColor(Qt::black);
@@ -279,6 +279,7 @@ void DBConfWindow::verifyTables() {
       }
       statusBox->setTextColor(Qt::black);
       scrollToEnd();
+      statusBox->insertPlainText("\n");
     }
   }
 }
