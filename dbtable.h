@@ -49,7 +49,7 @@ private:
   DBFieldList m_uks;  // Unique keys
   DBFieldList m_fks;  // Foreign keys
 
-  DBField* readField();
+  DBField* readField(bool ignorePK = false);
 
   QString keyLine(QString keyType);
 };

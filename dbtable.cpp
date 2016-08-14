@@ -36,7 +36,7 @@ m_versionMinor(0) {
         int tableFields = settings->beginReadArray(tempGrp);
         for (int i = 0; i < tableFields; i++) {
           settings->setArrayIndex(i);
-          DBField* field = readField();
+          DBField* field = readField(true);
           m_fields.append(field);
         }
         settings->endArray();  // [tempGrp]
@@ -47,7 +47,7 @@ m_versionMinor(0) {
           m_numFields += 1;
           QString tempGrp = "table-" + copyField;
           settings->beginGroup(tempGrp);
-          DBField* field = readField();
+          DBField* field = readField(true);
           settings->endGroup();  // [tempGrp]
         }
       }
@@ -173,7 +173,7 @@ QString DBTable::createTableCommand() const {
   return str;
 }
 
-DBField* DBTable::readField() {
+DBField* DBTable::readField(bool ignorePK) {
   DBField* field = new DBField();
   field->autoIncrement = false;
   field->name         = settings->value("name").toString();
@@ -182,6 +182,9 @@ DBField* DBTable::readField() {
   field->maxSize      = settings->value("max_size").toInt();
   field->allowNull    = settings->value("allow_null").toBool();
   field->key          = settings->value("key").toString();
+  if (ignorePK && field->key == "PRI") {
+    field->key = "";
+  }
   field->defaultValue = settings->value("default");
   field->fkRef        = settings->value("fk_ref").toString();
   field->fkConstraint = settings->value("fk_constraint").toString();

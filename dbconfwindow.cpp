@@ -286,7 +286,6 @@ void DBConfWindow::verifyTables() {
 }
 
 void DBConfWindow::saveDBSettings() {
-  // TODO: FIXME: do this one
   if (tempSettings) {
     QString appDir = dbSettings->appRootDir();
     // QString filename = QFileDialog::getOpenFileName(this,
